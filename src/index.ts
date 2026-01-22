@@ -1,20 +1,33 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
-import express from 'express';
 import cors from 'cors';
+import express from 'express';
+import http from 'http';
+import { config, validateConfig } from './config/config';
+import { connectDB } from './config/database';
+import { initRedis } from './config/redis';
 import emailRoute from './routes/email.route';
 
-
-
 const app = express();
+let server: http.Server;
 
 app.use(cors());
 app.use(express.json());
-
 app.use('/ReviewMe', emailRoute);
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+validateConfig();
+const PORT = Number(config.PORT);
+
+async function startApp() {
+  await connectDB();
+  await initRedis();
+
+  server = app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}
+
+// <---- disposability graceful shutdown
+
+startApp().catch(err => {
+  console.error('❌ Failed to start application:', err);
+  process.exit(1);
 });

@@ -1,3 +1,4 @@
+import { config } from '../config/config';
 import nodemailer from 'nodemailer';
 
 interface SendEmailParams {
@@ -9,8 +10,8 @@ interface SendEmailParams {
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: String(process.env.EMAIL_USER!),
-    pass: String(process.env.EMAIL_PASS!)
+    user: String(config.EMAIL_USER),
+    pass: String(config.EMAIL_PASS)
   }
 });
 
@@ -20,7 +21,7 @@ export async function sendEmail({
   message
 }: SendEmailParams) {
   return transporter.sendMail({
-    from: String(process.env.EMAIL_USER!),
+    from: String(config.EMAIL_USER),
     to,
     subject,
     text: message
