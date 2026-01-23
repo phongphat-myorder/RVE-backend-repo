@@ -3,6 +3,7 @@ import { config } from '../config/config';
 import { WorkshopRepository } from '../mongoDB/workshop_db.repository';
 import { resultData } from '../routes/interface/resultInterface';
 import { sendEmail } from '../services/email.service';
+import { logger } from '../config/logger';
 
 const router = Router();
 
@@ -22,7 +23,6 @@ router.post(
   '/send-email',
   async (req: Request<{}, {}, SendEmailBody>, res: Response) => {
     const { message } = req.body;
-
     if (!message) {
       WorkshopRepo.recordData('Missing message', config.EMAIL_USER)
       cacheMessage.push({ status: 'Missing message', sender: config.EMAIL_USER , timestamp: Date.now().toString() }); // <---- process delete this line if not use cache
@@ -34,7 +34,6 @@ router.post(
       WorkshopRepo.recordData('success', config.EMAIL_USER)
       cacheMessage.push({ status: 'success', sender: config.EMAIL_USER, timestamp: Date.now().toString() }); // <---- process delete this line if not use cache
     } catch (error) {
-      console.error(error);
       WorkshopRepo.recordData('fail', config.EMAIL_USER)
       cacheMessage.push({ status: 'fail', sender: config.EMAIL_USER, timestamp: Date.now().toString() }); // <---- process delete this line if not use cache
     }
