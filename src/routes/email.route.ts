@@ -33,9 +33,11 @@ router.post(
       await sendEmail({ to: 'phongpat003@gmail.com', subject: '🚀 Workshop 12 Factor app message review', message });
       WorkshopRepo.recordData('success', config.EMAIL_USER)
       cacheMessage.push({ status: 'success', sender: config.EMAIL_USER, timestamp: Date.now().toString() }); // <---- process delete this line if not use cache
+      res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
       WorkshopRepo.recordData('fail', config.EMAIL_USER)
       cacheMessage.push({ status: 'fail', sender: config.EMAIL_USER, timestamp: Date.now().toString() }); // <---- process delete this line if not use cache
+      res.status(500).json({ message: 'Failed to send email' });
     }
   }
 );
